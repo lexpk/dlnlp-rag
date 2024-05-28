@@ -6,8 +6,10 @@ from torch.utils.data import DataLoader
 from tqdm.autonotebook import tqdm
 
 
-device = 'cuda' if cuda.is_available() else 'cpu'
-sentence_transformer = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2", device='cuda')
+_sentence_transformer = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="all-MiniLM-L6-v2",
+    device='cuda' if cuda.is_available() else 'cpu'
+)
 
 
 class Database:
@@ -24,7 +26,7 @@ class Wiki10k(Database):
         try:
             self.db = self.client.get_collection('wiki10k')
         except:
-            self.db = self.client.create_collection('wiki10k', embedding_function=sentence_transformer)
+            self.db = self.client.create_collection('wiki10k', embedding_function=_sentence_transformer)
             wikitext = load_dataset('sentence-transformers/wikipedia-en-sentences')
             loader = DataLoader(wikitext['train']['sentence'][:10000], batch_size=100)
             for i, batch in enumerate(tqdm(loader, desc='Embedding Wiki10k')):
