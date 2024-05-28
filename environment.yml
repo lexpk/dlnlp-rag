@@ -1,0 +1,18 @@
+name: rag
+channels:
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.11
+  - pytorch=2.3
+  - pytorch-cuda=11.8
+  - huggingface_hub==0.23.0
+  - jupyter==1.0.0
+  - ipywidgets==8.1.2
+  - chromadb==0.5.0
+  - transformers==4.41.1
+  - sentence-transformers==2.7.0
+  - pandas==2.2.1
+  - python-dotenv==1.0.1
+  - mwparserfromhell==0.6.6
