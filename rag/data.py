@@ -40,7 +40,7 @@ class Wikipedia(Database):
         try:
             self.db = self.client.get_collection('wikipedia')
         except:
-            self.db = self.client.create_collection('wikipedia', embedding_function=sentence_transformer)
+            self.db = self.client.create_collection('wikipedia', embedding_function=_sentence_transformer)
             wikitext = load_dataset('sentence-transformers/wikipedia-en-sentences')
             loader = DataLoader(wikitext['train']['sentence'], batch_size=100)
             for i, batch in enumerate(tqdm(loader, desc='Embedding Wikipedia')):
