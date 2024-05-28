@@ -3,7 +3,7 @@ from transformers import pipeline
 import torch
 
 
-class Model():
+class Generator:
     def __init__(self):
         pass
     
@@ -12,7 +12,7 @@ class Model():
         return output
 
 
-class Llama3_70b_4bit(Model):
+class Llama3_70b_4bit(Generator):
     def __init__(self):
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct")
         nf4_config = BitsAndBytesConfig(
@@ -30,7 +30,7 @@ class Llama3_70b_4bit(Model):
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 
-class Llama3_8b(Model):
+class Llama3_8b(Generator):
     def __init__(self):
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
         model = AutoModelForCausalLM.from_pretrained(
