@@ -24,9 +24,9 @@ class Wiki10k(Database):
     def __init__(self):
         self.client = chromadb.PersistentClient(path='./chroma')
         try:
-            self.db = self.client.get_collection('wiki10k')
+            self.db = self.client.get_collection('Wiki10k')
         except:
-            self.db = self.client.create_collection('wiki10k', embedding_function=_sentence_transformer)
+            self.db = self.client.create_collection('Wiki10k', embedding_function=_sentence_transformer)
             wikitext = load_dataset('sentence-transformers/wikipedia-en-sentences')
             loader = DataLoader(wikitext['train']['sentence'][:10000], batch_size=100)
             for i, batch in enumerate(tqdm(loader, desc='Embedding Wiki10k')):
@@ -38,9 +38,9 @@ class Wikipedia(Database):
     def __init__(self):
         self.client = chromadb.PersistentClient(path='./chroma')
         try:
-            self.db = self.client.get_collection('wikipedia')
+            self.db = self.client.get_collection('Wikipedia')
         except:
-            self.db = self.client.create_collection('wikipedia', embedding_function=_sentence_transformer)
+            self.db = self.client.create_collection('Wikipedia', embedding_function=_sentence_transformer)
             wikitext = load_dataset('sentence-transformers/wikipedia-en-sentences')
             loader = DataLoader(wikitext['train']['sentence'], batch_size=100)
             for i, batch in enumerate(tqdm(loader, desc='Embedding Wikipedia')):
