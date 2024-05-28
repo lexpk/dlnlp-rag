@@ -19,6 +19,12 @@ pip install -e .
 
 This will install the package in editable mode, so you can modify the code and the changes will be reflected in the installed package.
 
+To download the models form huggingface you need to agree to the [llama license agreement](https://huggingface.co/meta-llama/Meta-Llama-3-8B) and add your [access token](https://huggingface.co/docs/hub/security-tokens) as an environment variable. Simply create a file `.env` containing
+
+```
+HF_TOKEN=your_token_goes_here
+```
+
 ## Project Structure
 
 The main entry point of the project is the `experiments.ipynb` notebook.
