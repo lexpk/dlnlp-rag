@@ -47,3 +47,21 @@ class Wikipedia(Retriever):
             loader = DataLoader(wikitext['train']['sentence'], batch_size=100)
             for i, batch in enumerate(tqdm(loader, desc='Embedding Wikipedia')):
                 self.db.add(ids=[f"{i*100 + j}" for j in range(100)], documents=batch)
+
+
+class Medical(Retriever):
+    def __init__(self, sentence_transformer="all-MiniLM-L6-v2"):
+        self.client = chromadb.PersistentClient(path='./chroma')
+        sentence_transformer = embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=sentence_transformer,
+            device='cuda' if cuda.is_available() else 'cpu'
+        )
+        try:
+            self.db = self.client.get_collection('Medical')
+        except:
+            self.db = self.client.create_collection('Medical', embedding_function=sentence_transformer)
+            dataset = load_dataset("MedRAG/textbooks")         
+            loader = DataLoader(wikitext['train']['contents'], batch_size=100)
+            for i, batch in enumerate(tqdm(loader, desc='Embedding Medical documents')):
+                self.db.add(ids=[f"{i*100 + j}" for j in range(100)], documents=batch)
+
