@@ -39,3 +39,13 @@ class Llama3_8b(Generator):
             device_map='auto'
         )
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
+
+class Gpt2(Generator):
+    def __init__(self):
+        tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
+        model = AutoModelForCausalLM.from_pretrained(
+            "openai-community/gpt2",
+            torch_dtype=torch.bfloat16,
+            device_map='auto'
+        )
+        self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
