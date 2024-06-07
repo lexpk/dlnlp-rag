@@ -65,3 +65,47 @@ class Medical(Retriever):
             for i, batch in enumerate(tqdm(loader, desc='Embedding Medical documents')):
                 self.db.add(ids=[f"{i*100 + j}" for j in range(100)], documents=batch)
 
+
+# Retriever but instead of a predefined db we use a WebSearch
+# Save your APi key as an environment variable: WEB_SEARCH_TOKEN=<token>
+
+import requests
+import json
+
+class WebSearch():
+    def __init__(self):
+      pass
+
+    def __call__(self, query, k=10):
+      url = 'https://api.tavily.com/search'
+      parameters = {
+        "api_key": os.environ.get("WEB_SEARCH_TOKEN"),
+        "query": query,
+        "search_depth": "basic",
+        "include_answer": False,
+        "include_images": False,
+        "include_raw_content": False,
+        "max_results": k,
+        "include_domains": [],
+        "exclude_domains": []
+      }
+
+      response = requests.post(url, json = parameters)
+      result = response.json()
+
+      contextEntries = []
+
+      for entry in result["results"]:
+        content = entry["content"]
+        if not content or content=="[Removed]":
+          continue
+
+        # optionally trim content
+        # content = content[:50]
+
+        contextEntries.append(content)
+        if len(contextEntries) >= 10:
+          break
+
+      return "\n".join(contextEntries)
+
