@@ -40,6 +40,16 @@ class Llama3_8b(Generator):
         )
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
+class Llama2_4b(Generator):
+    def __init__(self):
+        tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-4k-instruct")
+        model = AutoModelForCausalLM.from_pretrained(
+            "microsoft/Phi-3-mini-4k-instruct",
+            torch_dtype=torch.bfloat16,
+            device_map='auto'
+        )
+        self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
+
 class Gpt2(Generator):
     def __init__(self):
         tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
