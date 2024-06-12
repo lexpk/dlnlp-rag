@@ -7,7 +7,8 @@ class Generator:
     def __init__(self):
         pass
     
-    def __call__(self, prompt, max_new_tokens=100):
+    def __call__(self, prompt, max_new_tokens=100, seed=42):
+        torch.manual_seed(seed)        
         output = self.pipeline(prompt, max_new_tokens=max_new_tokens)[0]['generated_text']
         return output
 
