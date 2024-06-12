@@ -60,3 +60,13 @@ class Gpt2(Generator):
             device_map='auto'
         )
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
+
+class Phi15_1b(Generator):
+    def __init__(self):
+        tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-1_5")
+        model = AutoModelForCausalLM.from_pretrained(
+            "microsoft/phi-1_5",
+            torch_dtype=torch.bfloat16,
+            device_map='auto'
+        )
+        self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
