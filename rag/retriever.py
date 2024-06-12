@@ -61,7 +61,7 @@ class Medical(Retriever):
         except:
             self.db = self.client.create_collection('Medical', embedding_function=sentence_transformer)
             dataset = load_dataset("MedRAG/textbooks")         
-            loader = DataLoader(wikitext['train']['contents'], batch_size=100)
+            loader = DataLoader(dataset['train']['contents'], batch_size=100)
             for i, batch in enumerate(tqdm(loader, desc='Embedding Medical documents')):
                 self.db.add(ids=[f"{i*100 + j}" for j in range(100)], documents=batch)
 
