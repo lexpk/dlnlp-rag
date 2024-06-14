@@ -25,6 +25,12 @@ To download the models form huggingface you need to agree to the [llama license 
 HF_TOKEN=your_token_goes_here
 ```
 
+If you want to use the WebSearch Retriever you have to add an additional environment variable with your [Tavily](https://docs.tavily.com/docs/tavily-api/introduction) token
+
+```
+WEB_SEARCH_TOKEN=your_token_goes_here
+```
+
 ## Project Structure
 
 The main entry point of the project is the `experiments.ipynb` notebook.
