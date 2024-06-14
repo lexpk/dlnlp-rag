@@ -49,7 +49,7 @@ class Wikipedia(Retriever):
                 self.db.add(ids=[f"{i*100 + j}" for j in range(100)], documents=batch)
 
 
-class Medical(Retriever):
+class MedicalTextbook(Retriever):
     def __init__(self, sentence_transformer="all-MiniLM-L6-v2"):
         self.client = chromadb.PersistentClient(path='./chroma')
         sentence_transformer = embedding_functions.SentenceTransformerEmbeddingFunction(
@@ -57,15 +57,53 @@ class Medical(Retriever):
             device='cuda' if cuda.is_available() else 'cpu'
         )
         try:
-            self.db = self.client.get_collection('Medical')
+            self.db = self.client.get_collection('MedicalTextbook')
         except:
-            self.db = self.client.create_collection('Medical', embedding_function=sentence_transformer)
+            self.db = self.client.create_collection('MedicalTextbook', embedding_function=sentence_transformer)
             dataset = load_dataset("MedRAG/textbooks")         
             loader = DataLoader(dataset['train']['contents'], batch_size=100)
-            for i, batch in enumerate(tqdm(loader, desc='Embedding Medical documents')):
+            for i, batch in enumerate(tqdm(loader, desc='Embedding MedicalTextbook documents')):
                 batch_size = len(batch)
                 self.db.add(ids=[f"{i*100 + j}" for j in range(batch_size)], documents=batch)
 
+
+class MedicalQuestion(Retriever):
+    def __init__(self, sentence_transformer="all-MiniLM-L6-v2"):
+        self.client = chromadb.PersistentClient(path='./chroma')
+        sentence_transformer = embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=sentence_transformer,
+            device='cuda' if cuda.is_available() else 'cpu'
+        )
+        try:
+            self.db = self.client.get_collection('MedicalQuestion')
+        except:
+            self.db = self.client.create_collection('MedicalQuestion', embedding_function=sentence_transformer)
+            dataset = load_dataset("bigbio/sciq", "sciq_bigbio_qa", split="train")     
+            loader = DataLoader(dataset, batch_size=100)
+            for i, batch in enumerate(tqdm(loader, desc='Embedding MedicalQuestion documents')):
+                batch_size = len(batch)
+                ids = [f"{i*100 + j}" for j in range(batch_size)]
+                documents = [f"{entry['question']} {entry['answer'][0]}" for entry in batch]
+                self.db.add(ids=ids, documents=documents)
+
+class WikiDoc(Retriever):
+    def __init__(self, sentence_transformer="all-MiniLM-L6-v2"):
+        self.client = chromadb.PersistentClient(path='./chroma')
+        sentence_transformer = embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=sentence_transformer,
+            device='cuda' if cuda.is_available() else 'cpu'
+        )
+        try:
+            self.db = self.client.get_collection('WikiDoc')
+        except:
+            self.db = self.client.create_collection('WikiDoc', embedding_function=sentence_transformer)
+            dataset = load_dataset("medalpaca/medical_meadow_wikidoc", split="train")        
+            loader = DataLoader(dataset, batch_size=100)
+            for i, batch in enumerate(tqdm(loader, desc='Embedding WikiDoc documents')):
+                batch_size = len(batch)
+                ids = [f"{i*100 + j}" for j in range(batch_size)]
+                documents = [entry['output'] for entry in batch]
+                self.db.add(ids=ids, documents=documents)
 
 # Retriever but instead of a predefined db we use a WebSearch
 # Save your APi key as an environment variable: WEB_SEARCH_TOKEN=<token>
