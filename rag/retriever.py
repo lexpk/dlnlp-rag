@@ -63,7 +63,8 @@ class Medical(Retriever):
             dataset = load_dataset("MedRAG/textbooks")         
             loader = DataLoader(dataset['train']['contents'], batch_size=100)
             for i, batch in enumerate(tqdm(loader, desc='Embedding Medical documents')):
-                self.db.add(ids=[f"{i*100 + j}" for j in range(100)], documents=batch)
+                batch_size = len(batch)
+                self.db.add(ids=[f"{i*100 + j}" for j in range(batch_size)], documents=batch)
 
 
 # Retriever but instead of a predefined db we use a WebSearch
