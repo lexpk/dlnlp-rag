@@ -1,0 +1,17 @@
+evaluations=[
+	DatasetEvaluation("GPT 2", "Generator (without RAG)", 4, 18, 30),
+	DatasetEvaluation("GPT 2", "RAG - Wikipedia (10k) dataset", 7, 15, 30),
+	DatasetEvaluation("GPT 2", "RAG - Medical textbook dataset", 3, 11, 30),
+	DatasetEvaluation("GPT 2", "RAG - Medical question dataset", 6, 9, 30),
+	DatasetEvaluation("GPT 2", "RAG - WikiDoc dataset", 6, 9, 30),
+	DatasetEvaluation("Phi-1.5b", "Generator (without RAG)", 12, 1, 30),
+	DatasetEvaluation("Phi-1.5b", "RAG - Wikipedia (10k) dataset", 16, 1, 30),
+	DatasetEvaluation("Phi-1.5b", "RAG - Medical textbook dataset", 13, 1, 30),
+	DatasetEvaluation("Phi-1.5b", "RAG - Medical question dataset", 13, 1, 30),
+	DatasetEvaluation("Phi-1.5b", "RAG - WikiDoc dataset", 13, 1, 30),
+	DatasetEvaluation("Llama2-4b", "Generator (without RAG)", 24, 0, 30),
+	DatasetEvaluation("Llama2-4b", "RAG - Wikipedia (10k) dataset", 23, 0, 30),
+	DatasetEvaluation("Llama2-4b", "RAG - Medical textbook dataset", 22, 0, 30),
+	DatasetEvaluation("Llama2-4b", "RAG - Medical question dataset", 24, 0, 30),
+	DatasetEvaluation("Llama2-4b", "RAG - WikiDoc dataset", 24, 0, 30),
+]
