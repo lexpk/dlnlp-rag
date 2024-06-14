@@ -28,6 +28,7 @@ class Llama3_70b_4bit(Generator):
             torch_dtype=torch.bfloat16,
             device_map='auto'
         )
+        model.generation_config.pad_token_id = model.generation_config.eos_token_id
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 
@@ -39,6 +40,7 @@ class Llama3_8b(Generator):
             torch_dtype=torch.bfloat16,
             device_map='auto'
         )
+        model.generation_config.pad_token_id = model.generation_config.eos_token_id
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 class Llama2_4b(Generator):
@@ -49,6 +51,7 @@ class Llama2_4b(Generator):
             torch_dtype=torch.bfloat16,
             device_map='auto'
         )
+        model.generation_config.pad_token_id = model.generation_config.eos_token_id
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 class Gpt2(Generator):
@@ -59,6 +62,7 @@ class Gpt2(Generator):
             torch_dtype=torch.bfloat16,
             device_map='auto'
         )
+        model.generation_config.pad_token_id = model.generation_config.eos_token_id
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 class Phi15_1b(Generator):
@@ -69,4 +73,5 @@ class Phi15_1b(Generator):
             torch_dtype=torch.bfloat16,
             device_map='auto'
         )
+        model.generation_config.pad_token_id = model.generation_config.eos_token_id
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
