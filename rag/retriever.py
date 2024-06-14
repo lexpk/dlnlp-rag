@@ -83,7 +83,9 @@ class MedicalQuestion(Retriever):
             for i, batch in enumerate(tqdm(loader, desc='Embedding MedicalQuestion documents')):
                 batch_size = len(batch)
                 ids = [f"{i*100 + j}" for j in range(batch_size)]
-                documents = [f"{entry['question']} {entry['answer'][0]}" for entry in batch]
+                documents = []
+                for entry in batch:
+                  documents.append(f"{entry['question']} {entry['answer'][0]}")
                 self.db.add(ids=ids, documents=documents)
 
 class WikiDoc(Retriever):
@@ -102,7 +104,7 @@ class WikiDoc(Retriever):
             for i, batch in enumerate(tqdm(loader, desc='Embedding WikiDoc documents')):
                 batch_size = len(batch)
                 ids = [f"{i*100 + j}" for j in range(batch_size)]
-                documents = [entry['output'] for entry in batch]
+                documents = [batch['output']]
                 self.db.add(ids=ids, documents=documents)
 
 # Retriever but instead of a predefined db we use a WebSearch
