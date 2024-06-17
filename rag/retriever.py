@@ -4,7 +4,7 @@ from datasets import load_dataset
 from torch import cuda
 from torch.utils.data import DataLoader
 from tqdm.autonotebook import tqdm
-
+import os
 
 class Retriever:
     def __call__(self, query, k=10):
