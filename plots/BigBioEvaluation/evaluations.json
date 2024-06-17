@@ -23,13 +23,6 @@
         },
         {
             "model_name": "GPT 2",
-            "retriever_name": "RAG - Medical question dataset",
-            "correct": 6,
-            "unretrievable": 9,
-            "total": 30
-        },
-        {
-            "model_name": "GPT 2",
             "retriever_name": "RAG - WikiDoc dataset",
             "correct": 6,
             "unretrievable": 9,
@@ -54,13 +47,6 @@
         {
             "model_name": "Phi-1.5b",
             "retriever_name": "RAG - Medical textbook dataset",
-            "correct": 13,
-            "unretrievable": 1,
-            "total": 30
-        },
-        {
-            "model_name": "Phi-1.5b",
-            "retriever_name": "RAG - Medical question dataset",
             "correct": 13,
             "unretrievable": 1,
             "total": 30
@@ -92,13 +78,6 @@
             "model_name": "Llama2-4b",
             "retriever_name": "RAG - Medical textbook dataset",
             "correct": 22,
-            "unretrievable": 0,
-            "total": 30
-        },
-        {
-            "model_name": "Llama2-4b",
-            "retriever_name": "RAG - Medical question dataset",
-            "correct": 24,
             "unretrievable": 0,
             "total": 30
         },
