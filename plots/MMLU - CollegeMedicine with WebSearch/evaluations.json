@@ -32,8 +32,8 @@
             "model_name": "GPT 2",
             "retriever_name": "RAG - WebSearch as retriever",
             "correct": 6,
-            "unretrievable": 13,
-            "total": 40
+            "unretrievable": 12,
+            "total": 30
         }
     ],
     "Phi-1.5b": [
