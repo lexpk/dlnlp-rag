@@ -132,7 +132,17 @@ class WebSearch():
       return contextEntries
 
 
+class PerfectSearch():
+    def __init__(self):
+        self.dataset = load_dataset("cais/mmlu", 'college_medicine', split="test")
 
-
-
+    def __call__(self, query, k=10):
+        if "A)" in query:
+            query = query.split("A)")[0]
+            query = query.strip()
+        
+        for entry in self.dataset:
+            if query in entry['question']:
+                return  [f"{entry['question']} {entry['choices'][entry['answer']]}"]
+        return [""]
         
