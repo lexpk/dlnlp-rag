@@ -3,73 +3,73 @@
         {
             "model_name": "GPT 2",
             "retriever_name": "Generator (without RAG)",
-            "correct": 2,
-            "unretrievable": 26,
+            "correct": 12,
+            "unretrievable": 3,
             "total": 30
         },
         {
             "model_name": "GPT 2",
             "retriever_name": "RAG - Wikipedia (10k) dataset",
-            "correct": 4,
-            "unretrievable": 24,
+            "correct": 7,
+            "unretrievable": 12,
             "total": 30
         },
         {
             "model_name": "GPT 2",
             "retriever_name": "RAG - Medical textbook dataset",
-            "correct": 1,
-            "unretrievable": 25,
+            "correct": 8,
+            "unretrievable": 14,
             "total": 30
         },
         {
             "model_name": "GPT 2",
             "retriever_name": "RAG - WikiDoc dataset",
-            "correct": 2,
-            "unretrievable": 25,
+            "correct": 8,
+            "unretrievable": 11,
             "total": 30
         },
         {
             "model_name": "GPT 2",
             "retriever_name": "RAG - WebSearch as retriever",
-            "correct": 2,
-            "unretrievable": 24,
-            "total": 30
+            "correct": 6,
+            "unretrievable": 13,
+            "total": 40
         }
     ],
     "Phi-1.5b": [
         {
             "model_name": "Phi-1.5b",
             "retriever_name": "Generator (without RAG)",
-            "correct": 6,
-            "unretrievable": 1,
+            "correct": 12,
+            "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Phi-1.5b",
             "retriever_name": "RAG - Wikipedia (10k) dataset",
-            "correct": 8,
-            "unretrievable": 4,
+            "correct": 12,
+            "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Phi-1.5b",
             "retriever_name": "RAG - Medical textbook dataset",
-            "correct": 5,
-            "unretrievable": 4,
+            "correct": 13,
+            "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Phi-1.5b",
             "retriever_name": "RAG - WikiDoc dataset",
             "correct": 9,
-            "unretrievable": 4,
+            "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Phi-1.5b",
             "retriever_name": "RAG - WebSearch as retriever",
-            "correct": 4,
-            "unretrievable": 5,
+            "correct": 13,
+            "unretrievable": 0,
             "total": 30
         }
     ],
@@ -77,36 +77,36 @@
         {
             "model_name": "Llama2-4b",
             "retriever_name": "Generator (without RAG)",
-            "correct": 10,
+            "correct": 25,
             "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Llama2-4b",
             "retriever_name": "RAG - Wikipedia (10k) dataset",
-            "correct": 11,
+            "correct": 24,
             "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Llama2-4b",
             "retriever_name": "RAG - Medical textbook dataset",
-            "correct": 10,
+            "correct": 25,
             "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Llama2-4b",
             "retriever_name": "RAG - WikiDoc dataset",
-            "correct": 10,
+            "correct": 25,
             "unretrievable": 0,
             "total": 30
         },
         {
             "model_name": "Llama2-4b",
             "retriever_name": "RAG - WebSearch as retriever",
-            "correct": 9,
-            "unretrievable": 1,
+            "correct": 24,
+            "unretrievable": 0,
             "total": 30
         }
     ]

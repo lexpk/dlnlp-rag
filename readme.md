@@ -34,3 +34,15 @@ WEB_SEARCH_TOKEN=your_token_goes_here
 ## Project Structure
 
 The main entry point of the project is the `experiments.ipynb` notebook.
+
+## Bio Rag experiement
+
+The code for the bio experiment is provided in `bio_experiement.ipynb`.
+
+### Change dataset
+
+To change the dataset adapt:
+
+- `plot_dir` ... this sets the path for the generated plots
+- `dataset` ... to load the correct dataset
+- `get_query` and `get_solution` lamda functions ... this adapts how the query/question and the solution are extracted from the dataset
