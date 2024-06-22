@@ -5,6 +5,8 @@ from torch import cuda
 from torch.utils.data import DataLoader
 from tqdm.autonotebook import tqdm
 import os
+import requests
+
 
 class Retriever:
     def __call__(self, query, k=10):
@@ -67,27 +69,6 @@ class MedicalTextbook(Retriever):
                 self.db.add(ids=[f"{i*100 + j}" for j in range(batch_size)], documents=batch)
 
 
-class MedicalQuestion(Retriever):
-    def __init__(self, sentence_transformer="all-MiniLM-L6-v2"):
-        self.client = chromadb.PersistentClient(path='./chroma')
-        sentence_transformer = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name=sentence_transformer,
-            device='cuda' if cuda.is_available() else 'cpu'
-        )
-        try:
-            self.db = self.client.get_collection('MedicalQuestion')
-        except:
-            self.db = self.client.create_collection('MedicalQuestion', embedding_function=sentence_transformer)
-            dataset = load_dataset("bigbio/sciq", "sciq_bigbio_qa", split="train")     
-            loader = DataLoader(dataset, batch_size=100)
-            for i, batch in enumerate(tqdm(loader, desc='Embedding MedicalQuestion documents')):
-                batch_size = len(batch)
-                ids = [f"{i*100 + j}" for j in range(batch_size)]
-                documents = []
-                for entry in batch:
-                  documents.append(f"{entry['question']} {entry['answer'][0]}")
-                self.db.add(ids=ids, documents=documents)
-
 class WikiDoc(Retriever):
     def __init__(self, sentence_transformer="all-MiniLM-L6-v2"):
         self.client = chromadb.PersistentClient(path='./chroma')
@@ -121,7 +102,7 @@ class WebSearch():
       url = 'https://api.tavily.com/search'
       parameters = {
         "api_key": os.environ.get("WEB_SEARCH_TOKEN"),
-        "query": query,
+        "query": query[:380],
         "search_depth": "basic",
         "include_answer": False,
         "include_images": False,
@@ -148,5 +129,10 @@ class WebSearch():
         if len(contextEntries) >= 10:
           break
 
-      return "\n".join(contextEntries)
+      return contextEntries
 
+
+
+
+
+        

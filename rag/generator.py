@@ -9,8 +9,11 @@ class Generator:
     
     def __call__(self, prompt, max_new_tokens=100, seed=42):
         torch.manual_seed(seed)        
-        output = self.pipeline(prompt, max_new_tokens=max_new_tokens)[0]['generated_text']
+        output = self.pipeline(prompt, max_new_tokens=max_new_tokens, pad_token_id=self.tokenizer.eos_token_id)[0]['generated_text']
         return output
+
+    def get_tokenizer(self):
+        return self.tokenizer
 
 
 class Llama3_70b_4bit(Generator):
@@ -29,6 +32,7 @@ class Llama3_70b_4bit(Generator):
             device_map='auto'
         )
         model.generation_config.pad_token_id = model.generation_config.eos_token_id
+        self.tokenizer = tokenizer
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 
@@ -41,6 +45,7 @@ class Llama3_8b(Generator):
             device_map='auto'
         )
         model.generation_config.pad_token_id = model.generation_config.eos_token_id
+        self.tokenizer = tokenizer
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 class Llama2_4b(Generator):
@@ -52,6 +57,7 @@ class Llama2_4b(Generator):
             device_map='auto'
         )
         model.config.pad_token_id = model.generation_config.eos_token_id
+        self.tokenizer = tokenizer
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 class Gpt2(Generator):
@@ -63,6 +69,7 @@ class Gpt2(Generator):
             device_map='auto'
         )
         model.generation_config.pad_token_id = model.generation_config.eos_token_id
+        self.tokenizer = tokenizer
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 class Phi15_1b(Generator):
@@ -74,4 +81,5 @@ class Phi15_1b(Generator):
             device_map='auto'
         )
         model.generation_config.pad_token_id = model.generation_config.eos_token_id
+        self.tokenizer = tokenizer
         self.pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
