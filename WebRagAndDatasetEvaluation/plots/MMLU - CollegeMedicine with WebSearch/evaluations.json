@@ -1,0 +1,113 @@
+{
+    "GPT 2": [
+        {
+            "model_name": "GPT 2",
+            "retriever_name": "Generator (without RAG)",
+            "correct": 12,
+            "unretrievable": 3,
+            "total": 30
+        },
+        {
+            "model_name": "GPT 2",
+            "retriever_name": "RAG - Wikipedia (10k) dataset",
+            "correct": 7,
+            "unretrievable": 12,
+            "total": 30
+        },
+        {
+            "model_name": "GPT 2",
+            "retriever_name": "RAG - Medical textbook dataset",
+            "correct": 8,
+            "unretrievable": 14,
+            "total": 30
+        },
+        {
+            "model_name": "GPT 2",
+            "retriever_name": "RAG - WikiDoc dataset",
+            "correct": 8,
+            "unretrievable": 11,
+            "total": 30
+        },
+        {
+            "model_name": "GPT 2",
+            "retriever_name": "RAG - WebSearch as retriever",
+            "correct": 6,
+            "unretrievable": 12,
+            "total": 30
+        }
+    ],
+    "Phi-1.5b": [
+        {
+            "model_name": "Phi-1.5b",
+            "retriever_name": "Generator (without RAG)",
+            "correct": 12,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Phi-1.5b",
+            "retriever_name": "RAG - Wikipedia (10k) dataset",
+            "correct": 12,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Phi-1.5b",
+            "retriever_name": "RAG - Medical textbook dataset",
+            "correct": 13,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Phi-1.5b",
+            "retriever_name": "RAG - WikiDoc dataset",
+            "correct": 9,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Phi-1.5b",
+            "retriever_name": "RAG - WebSearch as retriever",
+            "correct": 13,
+            "unretrievable": 0,
+            "total": 30
+        }
+    ],
+    "Llama2-4b": [
+        {
+            "model_name": "Llama2-4b",
+            "retriever_name": "Generator (without RAG)",
+            "correct": 25,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Llama2-4b",
+            "retriever_name": "RAG - Wikipedia (10k) dataset",
+            "correct": 24,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Llama2-4b",
+            "retriever_name": "RAG - Medical textbook dataset",
+            "correct": 25,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Llama2-4b",
+            "retriever_name": "RAG - WikiDoc dataset",
+            "correct": 25,
+            "unretrievable": 0,
+            "total": 30
+        },
+        {
+            "model_name": "Llama2-4b",
+            "retriever_name": "RAG - WebSearch as retriever",
+            "correct": 24,
+            "unretrievable": 0,
+            "total": 30
+        }
+    ]
+}
