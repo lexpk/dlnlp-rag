@@ -2,5 +2,5 @@
 chroma
 __pycache__
 *.egg-info
-/rag/.ipynb_checkpoints
-/.ipynb_checkpoints
+.ipynb_checkpoints
+plots
