@@ -9,13 +9,14 @@ import sys
 import pandas as pd
 import torch
 from tqdm import tqdm
+import json
 
 from transformers import BartForConditionalGeneration, RagRetriever, RagSequenceForGeneration, RagTokenForGeneration
 from transformers import logging as transformers_logging
 
 
 sys.path.append(os.path.join(os.getcwd()))  # noqa: E402 # isort:skip
-from utils_rag import exact_match_score, f1_score  # noqa: E402 # isort:skip
+from rag.utils_rag import exact_match_score, exact_match_prefix_score, f1_score  # noqa: E402 # isort:skip
 
 
 logger = logging.getLogger(__name__)
@@ -38,11 +39,11 @@ def metric_max_over_ground_truths(metric_fn, prediction, ground_truths):
     return max(metric_fn(prediction, gt) for gt in ground_truths)
 
 
-def get_scores(args, preds_path, gold_data_path):
+def get_scores(preds_path, gold_data_path, gold_data_mode="qa", **kwargs):
     hypos = [line.strip() for line in open(preds_path, "r").readlines()]
     answers = []
 
-    if args.gold_data_mode == "qa":
+    if gold_data_mode == "qa":
         data = pd.read_csv(gold_data_path, sep="\t", header=None)
         for answer_list in data[1]:
             ground_truths = ast.literal_eval(answer_list)
@@ -54,7 +55,7 @@ def get_scores(args, preds_path, gold_data_path):
     f1 = em = total = 0
     for prediction, ground_truths in zip(hypos, answers):
         total += 1
-        em += metric_max_over_ground_truths(exact_match_score, prediction, ground_truths)
+        em += metric_max_over_ground_truths(exact_match_prefix_score, prediction, ground_truths)
         f1 += metric_max_over_ground_truths(f1_score, prediction, ground_truths)
 
     em = 100.0 * em / total
@@ -63,9 +64,10 @@ def get_scores(args, preds_path, gold_data_path):
     logger.info(f"F1: {f1:.2f}")
     logger.info(f"EM: {em:.2f}")
 
+    return em, f1
 
-def get_precision_at_k(args, preds_path, gold_data_path):
-    k = args.k
+
+def get_precision_at_k(preds_path, gold_data_path, k=1, **kwargs):
     hypos = [line.strip() for line in open(preds_path, "r").readlines()]
     references = [line.strip() for line in open(gold_data_path, "r").readlines()]
 
@@ -79,21 +81,16 @@ def get_precision_at_k(args, preds_path, gold_data_path):
     em = 100.0 * em / total
     logger.info(f"Precision@{k}: {em: .2f}")
 
+    return em
 
-def evaluate_batch_retrieval(args, rag_model, questions):
-    def strip_title(title):
-        if title.startswith('"'):
-            title = title[1:]
-        if title.endswith('"'):
-            title = title[:-1]
-        return title
 
+def retrieve_batch_docs(rag_model, questions, device=torch.device("cuda" if torch.cuda.is_available() else "cpu"), n_docs=None, **kwargs):
     retriever_input_ids = rag_model.retriever.question_encoder_tokenizer.batch_encode_plus(
         questions,
         return_tensors="pt",
         padding=True,
         truncation=True,
-    )["input_ids"].to(args.device)
+    )["input_ids"].to(device)
 
     question_enc_outputs = rag_model.rag.question_encoder(retriever_input_ids)
     question_enc_pool_output = question_enc_outputs[0]
@@ -102,10 +99,21 @@ def evaluate_batch_retrieval(args, rag_model, questions):
         retriever_input_ids,
         question_enc_pool_output.cpu().detach().to(torch.float32).numpy(),
         prefix=rag_model.rag.generator.config.prefix,
-        n_docs=rag_model.config.n_docs,
+        n_docs=n_docs or rag_model.config.n_docs,
         return_tensors="pt",
     )
-    all_docs = rag_model.retriever.index.get_doc_dicts(result.doc_ids)
+    return rag_model.retriever.index.get_doc_dicts(result.doc_ids)
+
+
+def evaluate_batch_retrieval(rag_model, questions, **kwargs):
+    def strip_title(title):
+        if title.startswith('"'):
+            title = title[1:]
+        if title.endswith('"'):
+            title = title[:-1]
+        return title
+    
+    all_docs = retrieve_batch_docs(rag_model, questions, **kwargs)
     provenance_strings = []
     for docs in all_docs:
         provenance = [strip_title(title) for title in docs["title"]]
@@ -113,31 +121,121 @@ def evaluate_batch_retrieval(args, rag_model, questions):
     return provenance_strings
 
 
-def evaluate_batch_e2e(args, rag_model, questions):
+def evaluate_batch_e2e(rag_model, questions, device=torch.device("cuda" if torch.cuda.is_available() else "cpu"), num_beams=4, min_length=1, max_length=50, print_predictions=False, **kwargs):
     with torch.no_grad():
         inputs_dict = rag_model.retriever.question_encoder_tokenizer.batch_encode_plus(
             questions, return_tensors="pt", padding=True, truncation=True
         )
 
-        input_ids = inputs_dict.input_ids.to(args.device)
-        attention_mask = inputs_dict.attention_mask.to(args.device)
+        input_ids = inputs_dict.input_ids.to(device)
+        attention_mask = inputs_dict.attention_mask.to(device)
         outputs = rag_model.generate(  # rag_model overwrites generate
             input_ids,
             attention_mask=attention_mask,
-            num_beams=args.num_beams,
-            min_length=args.min_length,
-            max_length=args.max_length,
+            num_beams=num_beams,
+            min_length=min_length,
+            max_length=max_length,
             early_stopping=False,
             num_return_sequences=1,
             bad_words_ids=[[0, 0]],  # BART likes to repeat BOS tokens, dont allow it to generate more than one
         )
         answers = rag_model.retriever.generator_tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
-        if args.print_predictions:
+        if print_predictions:
             for q, a in zip(questions, answers):
                 logger.info("Q: {} - A: {}".format(q, a))
 
         return answers
+    
+
+def evaluate_batch_generation(tokenizer_model, questions, device=torch.device("cuda" if torch.cuda.is_available() else "cpu"), num_beams=4, min_length=1, max_length=50, **kwargs):
+    tokenizer, model = tokenizer_model
+
+    with torch.no_grad():
+        inputs_dict = tokenizer.batch_encode_plus(
+            questions, return_tensors="pt", padding=True, truncation=True
+        )
+
+        input_ids = inputs_dict.input_ids.to(device)
+        attention_mask = inputs_dict.attention_mask.to(device)
+        outputs = model.generate(
+            input_ids,
+            attention_mask=attention_mask,
+            num_beams=num_beams,
+            min_length=min_length,
+            max_length=max_length,
+            early_stopping=False,
+            num_return_sequences=1,
+            bad_words_ids=[[0, 0]],  # BART likes to repeat BOS tokens, dont allow it to generate more than one
+        )
+        answers = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        return answers
+
+
+def eval_rag(score_fn, evaluate_batch_fn, model, evaluation_set, gold_path, predictions_path, eval_batch_size=8, **kwargs):
+    with open(evaluation_set, "r") as eval_file, open(predictions_path, "w") as preds_file:
+        questions = []
+        for line in tqdm(eval_file):
+            questions.append(line.strip())
+            if len(questions) == eval_batch_size:
+                answers = evaluate_batch_fn(model, questions, **kwargs)
+                preds_file.write("\n".join(answers) + "\n")
+                preds_file.flush()
+                questions = []
+        if len(questions) > 0:
+            answers = evaluate_batch_fn(model, questions, **kwargs)
+            preds_file.write("\n".join(answers))
+            preds_file.flush()
+
+    return score_fn(predictions_path, gold_path, **kwargs)
+
+
+def retrieve_docs(rag_model, evaluation_set, documents_path, write_batch_size=8, **kwargs):
+    def drop_embeddings(doc):
+        return {k: v for k, v in doc.items() if k != "embeddings"}
+
+    with open(evaluation_set, "r") as eval_file, open(documents_path, "w") as docs_file:
+        questions = []
+        for line in tqdm(eval_file):
+            questions.append(line.strip())
+            if len(questions) == write_batch_size:
+                docs = retrieve_batch_docs(rag_model, questions, **kwargs)
+                docs_file.write("\n".join(map(json.dumps, map(drop_embeddings, docs))) + "\n")
+                docs_file.flush()
+                questions = []
+        if len(questions) > 0:
+            docs = retrieve_batch_docs(rag_model, questions, **kwargs)
+            docs_file.write("\n".join(map(json.dumps, map(drop_embeddings, docs))))
+            docs_file.flush()
+
+
+def eval_rag_docs(score_fn, evaluate_batch_docs_fn, model, evaluation_set, documents_path, gold_path, predictions_path, eval_batch_size=8, n_docs=5, offset=0, **kwargs):
+    def docs_list(docs):
+        return [{"title": title, "text": text} for title, text in zip(docs["title"], docs["text"])]
+    
+    with open(evaluation_set, "r") as eval_file, open(documents_path, "r") as docs_file, open(predictions_path, "w") as preds_file:
+        for _ in range(offset):
+            next(eval_file)
+            next(docs_file)
+
+        questions = []
+        documents = []
+        for line, docs in tqdm(zip(eval_file, docs_file)):
+            questions.append(line.strip())
+            documents.append(docs_list(json.loads(docs))[:n_docs])
+            if len(questions) == eval_batch_size:
+                answers = evaluate_batch_docs_fn(model, questions, documents, **kwargs)
+                preds_file.write("\n".join(answers) + "\n")
+                preds_file.flush()
+                questions = []
+                documents = []
+        if len(questions) > 0:
+            answers = evaluate_batch_docs_fn(model, questions, documents, **kwargs)
+            preds_file.write("\n".join(answers))
+            preds_file.flush()
+
+    return score_fn(predictions_path, gold_path, **kwargs)
+
 
 
 def get_args():
@@ -298,21 +396,15 @@ def main(args):
             model = model_class.from_pretrained(checkpoint, **model_kwargs)
         model.to(args.device)
 
-        with open(args.evaluation_set, "r") as eval_file, open(args.predictions_path, "w") as preds_file:
-            questions = []
-            for line in tqdm(eval_file):
-                questions.append(line.strip())
-                if len(questions) == args.eval_batch_size:
-                    answers = evaluate_batch_fn(args, model, questions)
-                    preds_file.write("\n".join(answers) + "\n")
-                    preds_file.flush()
-                    questions = []
-            if len(questions) > 0:
-                answers = evaluate_batch_fn(args, model, questions)
-                preds_file.write("\n".join(answers))
-                preds_file.flush()
-
-            score_fn(args, args.predictions_path, args.gold_data_path)
+        eval_rag(
+            score_fn,
+            evaluate_batch_fn,
+            model,
+            args.evaluation_set,
+            args.predictions_path,
+            args.gold_data_path,
+            **vars(args),
+        )
 
 
 if __name__ == "__main__":

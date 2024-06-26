@@ -11,7 +11,6 @@ from logging import getLogger
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List
 
-import git
 import torch
 from torch.utils.data import Dataset
 
@@ -140,12 +139,6 @@ def flatten_list(summary_ids: List[List]):
     return list(itertools.chain.from_iterable(summary_ids))
 
 
-def save_git_info(folder_path: str) -> None:
-    """Save git information to output_dir/git_log.json"""
-    repo_infos = get_git_info()
-    save_json(repo_infos, os.path.join(folder_path, "git_log.json"))
-
-
 def save_json(content, path, indent=4, **json_dump_kwargs):
     with open(path, "w") as f:
         json.dump(content, f, indent=indent, **json_dump_kwargs)
@@ -154,17 +147,6 @@ def save_json(content, path, indent=4, **json_dump_kwargs):
 def load_json(path):
     with open(path) as f:
         return json.load(f)
-
-
-def get_git_info():
-    repo = git.Repo(search_parent_directories=True)
-    repo_infos = {
-        "repo_id": str(repo),
-        "repo_sha": str(repo.head.object.hexsha),
-        "repo_branch": str(repo.active_branch),
-        "hostname": str(socket.gethostname()),
-    }
-    return repo_infos
 
 
 def lmap(f: Callable, x: Iterable) -> List:
@@ -212,6 +194,10 @@ def f1_score(prediction, ground_truth):
 
 def exact_match_score(prediction, ground_truth):
     return normalize_answer(prediction) == normalize_answer(ground_truth)
+
+
+def exact_match_prefix_score(prediction, ground_truth):
+    return normalize_answer(prediction).startswith(normalize_answer(ground_truth))
 
 
 def calculate_exact_match(output_lns: List[str], reference_lns: List[str]) -> Dict:

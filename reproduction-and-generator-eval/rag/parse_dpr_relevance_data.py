@@ -10,6 +10,16 @@ import json
 from tqdm import tqdm
 
 
+def parse_dpr_relevance_data(src_path, evaluation_set, gold_data_path):
+    with open(src_path, "r") as src_file, open(evaluation_set, "w") as eval_file, open(
+        gold_data_path, "w"
+    ) as gold_file:
+        dpr_records = json.load(src_file)
+        for dpr_record in tqdm(dpr_records):
+            eval_file.write(dpr_record["question"] + "\n")
+            gold_file.write(dpr_record["question"] + "\t" + str(dpr_record["answers"]) + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -32,15 +42,7 @@ def main():
     )
     args = parser.parse_args()
 
-    with open(args.src_path, "r") as src_file, open(args.evaluation_set, "w") as eval_file, open(
-        args.gold_data_path, "w"
-    ) as gold_file:
-        dpr_records = json.load(src_file)
-        for dpr_record in tqdm(dpr_records):
-            question = dpr_record["question"]
-            contexts = [context["title"] for context in dpr_record["positive_ctxs"]]
-            eval_file.write(question + "\n")
-            gold_file.write("\t".join(contexts) + "\n")
+    parse_dpr_relevance_data(args.src_path, args.evaluation_set, args.gold_data_path)
 
 
 if __name__ == "__main__":
