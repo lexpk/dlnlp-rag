@@ -1,4 +1,4 @@
-name: rag-test
+name: rag
 channels:
   - conda-forge
   - pytorch
@@ -18,3 +18,6 @@ dependencies:
   - pandas==2.2.1
   - python-dotenv==1.0.1
   - mwparserfromhell==0.6.6
+  - pip
+  - pip:
+    - lean-dojo
