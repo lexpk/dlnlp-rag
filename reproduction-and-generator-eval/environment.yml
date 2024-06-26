@@ -1,0 +1,26 @@
+name: rag
+channels:
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.11
+  - pytorch=2.3
+  - pytorch-cuda=11.8
+  - pandas==2.2.1
+  - huggingface_hub==0.23.0
+  - accelerate==0.30.1
+  - jupyter==1.0.0
+  - ipywidgets==8.1.2
+  - chromadb==0.5.0
+  - transformers==4.41.2
+  - datasets==2.19.2
+  - sentence-transformers==2.7.0
+  - pandas==2.2.1
+  - python-dotenv==1.0.1
+  - mwparserfromhell==0.6.6
+  - faiss-gpu=1.8.0
+  - python-dotenv==1.0.1
+  - langchain==0.2.6
+  - langchain-huggingface==0.0.3
+  - seaborn==0.13.2
