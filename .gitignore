@@ -2,5 +2,7 @@
 chroma
 __pycache__
 *.egg-info
+.ipynb_checkpoints
+
 leandojo_benchmark_4/
 leandojo/leandojo_benchmark_4.tar.gz
