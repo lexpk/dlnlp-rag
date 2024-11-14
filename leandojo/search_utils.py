@@ -1,4 +1,4 @@
-# Snippets from https://github.com/lean-dojo/ReProver
+# Various code snippets from https://github.com/lean-dojo/ReProver
 
 from dataclasses import dataclass, field
 from enum import Enum
